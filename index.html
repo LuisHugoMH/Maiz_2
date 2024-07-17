@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>
-            TensorFlow.js Model
-        </title>
-        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-        <script defer src="script.js"></script>
-    </head>
-    <body>
-        <h1>Identificador de Maíz</h1>
-        <input type="file" id="imageInput">
-        <div>
-            <img id="selectedImage" width="256" height="256">
-            <p id="prediction">
-
-            </p>
-        </div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identificador de maíz</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script defer src="script.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        video {
+            width: 640px;
+            height: 480px;
+        }
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Identificador de maíz</h1>
+    <video id="video" autoplay></video>
+    <canvas id="canvas" width="256" height="256"></canvas>
+    <p id="prediction"></p>
+</body>
 </html>
