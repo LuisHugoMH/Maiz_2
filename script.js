@@ -1,42 +1,50 @@
-// script.js
-let model;
-
 async function loadModel() {
     try {
-        // Actualiza esta URL con la ruta correcta de tu repositorio de GitHub Pages
-        model = await tf.loadLayersModel('https://<tu-usuario>.github.io/<tu-repo>/model/model.json');
-        console.log('Modelo cargado correctamente');
+        const model = await tf.loadLayersModel('model/model.json');
+        return model;
     } catch (error) {
         console.error('Error al cargar el modelo:', error);
     }
 }
 
-async function predictImage(image) {
-    const img = tf.browser.fromPixels(image)
-        .resizeNearestNeighbor([256, 256])
-        .toFloat()
-        .expandDims(0);
-
-    const prediction = await model.predict(img).data();
-    return prediction;
+async function setupCamera() {
+    const video = document.getElementById('video');
+    const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480 },
+        audio: false
+    });
+    video.srcObject = stream;
+    return new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+            resolve(video);
+        };
+    });
 }
 
-document.getElementById('imageInput').addEventListener('change', async (event) => {
-    const file = event.target.files[0];
-    const imageElement = document.getElementById('selectedImage');
-    const reader = new FileReader();
+async function predictVideo(model) {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-    reader.onload = async function(e) {
-        imageElement.src = e.target.result;
-        imageElement.onload = async function() {
-            const prediction = await predictImage(imageElement);
-            document.getElementById('prediction').innerText = `Predicción: ${prediction}`;
-        }
-    };
+    const classes = ['Enfermo', 'Sano']; // Ajusta esto según tus clases
 
-    if (file) {
-        reader.readAsDataURL(file);
+    async function framePrediction() {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const img = tf.browser.fromPixels(canvas).resizeNearestNeighbor([256, 256]).toFloat().expandDims();
+        const predictions = model.predict(img).dataSync();
+        const predictedClass = tf.argMax(predictions).dataSync()[0];
+        document.getElementById('prediction').innerText = `Maíz ${classes[predictedClass]}`;
+        requestAnimationFrame(framePrediction);
     }
-});
 
+    framePrediction();
+}
+
+async function main() {
+    const model = await loadModel();
+    await setupCamera();
+    predictVideo(model);
+}
+
+main();
 window.addEventListener('load', loadModel);
