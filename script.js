@@ -10,7 +10,7 @@ async function loadModel() {
 async function setupCamera() {
     const video = document.getElementById('video');
 
-    // Buscar el dispositivo de video adecuado (la cámara trasera en este caso)
+    // Buscar el dispositivo de video adecuado
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
     const backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back')) || videoDevices[0];
