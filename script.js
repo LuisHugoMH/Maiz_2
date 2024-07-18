@@ -1,6 +1,6 @@
 async function loadModel() {
     try {
-        const model = await tf.loadLayersModel('model/model.json');
+        const model = await tf.loadLayersModel('https://<tu-usuario>.github.io/<tu-repo>/model/model.json');
         return model;
     } catch (error) {
         console.error('Error al cargar el modelo:', error);
@@ -8,53 +8,50 @@ async function loadModel() {
 }
 
 async function setupCamera() {
-    const video = document.getElementById('video');
-
-    // Buscar el dispositivo de video adecuado
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(device => device.kind === 'videoinput');
-    const backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back')) || videoDevices[0];
-
-    const stream = await navigator.mediaDevices.getUserMedia({
+    const video = document.getElementById('videoElement');
+    const constraints = {
         video: {
-            deviceId: backCamera.deviceId,
-            width: 640,
-            height: 480
-        },
-        audio: false
-    });
+            width: { ideal: 256 },
+            height: { ideal: 256 },
+            facingMode: { exact: 'environment' }
+        }
+    };
 
-    video.srcObject = stream;
-    return new Promise((resolve) => {
-        video.onloadedmetadata = () => {
-            resolve(video);
-        };
-    });
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = stream;
+        return new Promise((resolve) => {
+            video.onloadedmetadata = () => {
+                resolve(video);
+            };
+        });
+    } catch (error) {
+        console.error('Error al acceder a la cámara:', error);
+    }
 }
 
-async function predictVideo(model) {
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
+async function predictFrame(model, video) {
+    const tensor = tf.browser.fromPixels(video)
+        .resizeNearestNeighbor([256, 256])
+        .toFloat()
+        .expandDims();
+    const predictions = model.predict(tensor).dataSync();
+    const predictedClass = tf.argMax(predictions).dataSync()[0];
     const classes = ['Enfermo', 'Sano']; // Ajusta esto según tus clases
-
-    async function framePrediction() {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const img = tf.browser.fromPixels(canvas).resizeNearestNeighbor([256, 256]).toFloat().expandDims();
-        const predictions = model.predict(img).dataSync();
-        const predictedClass = tf.argMax(predictions).dataSync()[0];
-        document.getElementById('prediction').innerText = `Maíz ${classes[predictedClass]}`;
-        requestAnimationFrame(framePrediction);
-    }
-
-    framePrediction();
+    document.getElementById('prediction').innerText = `Maíz ${classes[predictedClass]}`;
 }
 
 async function main() {
+    const video = await setupCamera();
     const model = await loadModel();
-    await setupCamera();
-    predictVideo(model);
+    if (model) {
+        video.play();
+        setInterval(() => {
+            predictFrame(model, video);
+        }, 1000); // Realiza una predicción cada segundo
+    } else {
+        document.getElementById('prediction').innerText = 'Error al cargar el modelo';
+    }
 }
 
 main();
