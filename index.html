@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TensorFlow.js Model</title>
+    <title>Identificador de Maíz</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script defer src="script.js"></script>
     <style>
@@ -14,24 +14,22 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
         }
-        #video, #canvas {
-            width: 256px;
-            height: 256px;
-            border: 1px solid black;
+        #videoElement {
+            width: 100%;
+            max-width: 300px; /* Adjust the max-width as needed */
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
         }
-        #controls {
-            margin-top: 10px;
+        #prediction {
+            font-size: 1.5em;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Identificador de maíz</h1>
-    <div id="controls">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas" width="256" height="256"></canvas>
-    </div>
-    <p id="prediction"></p>
+    <video id="videoElement" autoplay playsinline></video>
+    <p id="prediction">Esperando predicción...</p>
 </body>
 </html>
