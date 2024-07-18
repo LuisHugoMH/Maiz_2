@@ -3,33 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Identificador de Maíz</title>
+    <title>TensorFlow.js Model</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script defer src="script.js"></script>
     <style>
         body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
         }
-        video {
-            width: 512px;
-            height: 512px;
+        #video, #canvas {
+            width: 256px;
+            height: 256px;
+            border: 1px solid black;
         }
-        canvas {
-            display: none;
+        #controls {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>Identificador de maíz</h1>
-    <video id="video" autoplay></video>
-    <canvas id="canvas" width="256" height="256"></canvas>
+    <div id="controls">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" width="256" height="256"></canvas>
+    </div>
     <p id="prediction"></p>
 </body>
 </html>
