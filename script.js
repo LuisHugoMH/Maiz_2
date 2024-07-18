@@ -1,6 +1,6 @@
 async function loadModel() {
     try {
-        const model = await tf.loadLayersModel('https://<tu-usuario>.github.io/<tu-repo>/model/model.json');
+        const model = await tf.loadLayersModel('https://luishugomh.github.io/Maiz_2/model/model.json');
         return model;
     } catch (error) {
         console.error('Error al cargar el modelo:', error);
